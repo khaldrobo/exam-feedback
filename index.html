@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  padding:20px;
+  background: linear-gradient(135deg, #cfd9ff, #e6f0ff);   /* blue gradient */
+  min-height:100vh;
+}
+
+.container{
+  max-width:720px;
+  background:white;
+  margin:auto;
+  padding:25px;
+  border-radius:14px;
+  box-shadow:0 20px 40px rgba(0,0,0,.15);
+}
+
+h2{
+  text-align:center;
+}
+
+select, textarea{
+  width:100%;
+  padding:12px;
+  font-size:16px;
+  margin-top:10px;
+  border-radius:6px;
+  border:1px solid #bbb;
+}
+
+.meme-grid{
+  display:flex;
+  flex-direction:column;
+  gap:28px;
+  margin-top:20px;
+}
+
+.meme-grid img{
+  width:100%;
+  height:auto;
+  max-height:420px;
+  object-fit:contain;
+  border-radius:12px;
+  cursor:pointer;
+  border:4px solid #c5d3ff;   /* visible against blue */
+  padding:8px;
+  background:white;
+  transition:0.2s;
+}
+
+.meme-grid img:hover{
+  transform:scale(1.02);
+  border-color:#7fa1ff;
+}
+
+.meme-grid img.selected{
+  border-color:#2e7dff;
+  background:#eef3ff;
+}
+
+button{
+  width:100%;
+  padding:16px;
+  margin-top:28px;
+  background:#2e7dff;
+  color:white;
+  border:none;
+  font-size:18px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#1c5fd1;
+}
+
+#msg{
+  text-align:center;
+  margin-top:18px;
+  color:#1c5fd1;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h2>Exam Feedback (Anonymous)</h2>
+
+<p><strong>1. How was your exam today?</strong></p>
+<select id="rating">
+  <option>Worst</option>
+  <option>Very Bad</option>
+  <option>Bad</option>
+  <option>Okayish</option>
+  <option>Good</option>
+  <option>Very Good</option>
+  <option>Best exam ever</option>
+</select>
+
+<p><strong>2. Choose the meme that best describes you during today’s exam</strong></p>
+
+<div class="meme-grid">
+  <img src="meme1.jpg" onclick="selectMeme('Confident',this)">
+  <img src="meme2.jpg" onclick="selectMeme('Confused',this)">
+  <img src="meme3.jpg" onclick="selectMeme('Overwhelmed',this)">
+  <img src="meme4.jpg" onclick="selectMeme('Relaxed',this)">
+</div>
+
+<p><strong>3. Any comment? (This will remain anonymous)</strong></p>
+<textarea id="comment" rows="4" placeholder="Write anything you want..."></textarea>
+
+<button onclick="submitForm()">Submit Feedback</button>
+
+<p id="msg"></p>
+
+</div>
+
+<script>
+let chosenMeme = "";
+
+function selectMeme(name, el){
+  chosenMeme = name;
+  document.querySelectorAll(".meme-grid img").forEach(i=>i.classList.remove("selected"));
+  el.classList.add("selected");
+}
+
+function submitForm(){
+  if(chosenMeme === ""){
+    alert("Please select a meme before submitting.");
+    return;
+  }
+
+  fetch("https://script.google.com/macros/s/AKfycbwvhroBD25mVfVWpzYts650_LHD4I3oTBGd_dnXigMPYDi_2Dc-rQFP8vIum1IoBYr74w/exec", {
+    method: "POST",
+    body: JSON.stringify({
+      rating: document.getElementById("rating").value,
+      meme: chosenMeme,
+      comment: document.getElementById("comment").value
+    })
+  })
+  .then(r=>r.json())
+  .then(()=>{
+    document.getElementById("msg").innerText = "Thank you. Your feedback has been recorded.";
+  });
+}
+</script>
+
+</body>
+</html>
